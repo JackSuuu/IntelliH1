@@ -14,6 +14,8 @@ An intelligent humanoid navigation system combining LLM-based planning (Groq API
 
 ## Demo
 
+`./demo.sh bedroom  # Go to bedroom`
+
 https://github.com/user-attachments/assets/b1d41aa8-13d5-47da-9389-0d6525d0fc74
 
 ---
