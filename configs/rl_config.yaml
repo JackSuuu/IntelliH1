@@ -1,0 +1,75 @@
+# Configuration for RL training of Unitree H1 robot
+
+# Task-specific configurations
+standing:
+  # Environment parameters
+  max_steps: 500
+  target_height: 1.0
+  
+  # Reward weights
+  height_weight: 5.0
+  orientation_weight: 2.0
+  stability_weight: 1.0
+  energy_penalty: 0.001
+  
+  # Training parameters
+  total_timesteps: 1000000
+  n_envs: 4
+  batch_size: 256
+  learning_rate: 0.0003
+  
+  # PPO hyperparameters
+  n_steps: 512
+  n_epochs: 10
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_range: 0.2
+  ent_coef: 0.0
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+
+walking:
+  # Environment parameters
+  max_steps: 1000
+  target_height: 1.0
+  target_velocity: 0.5
+  
+  # Reward weights
+  height_weight: 5.0
+  orientation_weight: 2.0
+  stability_weight: 1.0
+  velocity_weight: 3.0
+  lateral_penalty: 0.5
+  energy_penalty: 0.001
+  
+  # Training parameters
+  total_timesteps: 2000000
+  n_envs: 8
+  batch_size: 256
+  learning_rate: 0.0003
+  
+  # PPO hyperparameters
+  n_steps: 512
+  n_epochs: 10
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_range: 0.2
+  ent_coef: 0.01
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+
+# Checkpoint and logging
+checkpoint_freq: 50000
+eval_freq: 10000
+n_eval_episodes: 5
+
+# Paths
+save_dir: "models/policies"
+log_dir: "logs/tensorboard"
+
+# Training tips:
+# 1. Start with standing task before walking
+# 2. Use GPU if available for faster training (--device cuda)
+# 3. Monitor training with tensorboard: tensorboard --logdir logs/tensorboard
+# 4. Increase n_envs for faster training (requires more memory)
+# 5. Adjust reward weights if behavior is not as expected

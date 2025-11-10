@@ -55,6 +55,12 @@ An intelligent humanoid control system combining physics-based whole-body contro
    - Path tracking
    - Scene position presets (kitchen, bedroom, living room)
 
+5. **Reinforcement Learning** (✅ NEW!)
+   - Gymnasium environments for training
+   - PPO-based learning for standing and walking
+   - Pre-trained policy support
+   - Customizable reward functions
+
 ### 🛠️ Tech Stack
 
 - **Physics Engine**: MuJoCo 3.3+
@@ -65,6 +71,7 @@ An intelligent humanoid control system combining physics-based whole-body contro
 - **Perception**: OpenCV + C++ optimized point cloud processing
 - **Dynamics**: Pinocchio for rigid body dynamics
 - **Optimization**: OSQP for quadratic programming
+- **Reinforcement Learning**: Gymnasium + Stable-Baselines3 (PPO)
 
 ---
 
@@ -106,7 +113,13 @@ echo "GROQ_API_KEY=your_key_here" > .env
 ./demo.sh --navigate --target kitchen
 ./demo.sh --navigate --target 5.0,3.0
 
-# 5. View help
+# 5. Train RL policy for standing (NEW!)
+python src/rl/train_h1.py --task standing --timesteps 1000000
+
+# 6. Evaluate trained RL policy (NEW!)
+python src/rl/evaluate_h1.py --policy models/policies/standing/best_model.zip --task standing
+
+# 7. View help
 ./demo.sh --help
 ```
 
@@ -302,6 +315,40 @@ is_stable = zmp in support_polygon
 - Kitchen: (5.0, 3.0)
 - Bedroom: (-3.0, 6.0)
 - Living Room: (0.0, -4.0)
+
+### 4. Reinforcement Learning (NEW!)
+
+```bash
+# Train standing policy
+python src/rl/train_h1.py --task standing --timesteps 1000000
+
+# Train walking policy
+python src/rl/train_h1.py --task walking --timesteps 2000000 --n-envs 8
+
+# Evaluate trained policy
+python src/rl/evaluate_h1.py --policy models/policies/standing/best_model.zip --task standing
+
+# Monitor training progress
+tensorboard --logdir logs/tensorboard
+```
+
+**Key Features**:
+
+- **Gymnasium Environments**: Standard RL interface for H1 robot
+- **PPO Algorithm**: Proven algorithm for continuous control tasks
+- **Parallel Training**: Multi-environment training for faster convergence
+- **TensorBoard Integration**: Real-time training visualization
+- **Automatic Checkpointing**: Save best models during training
+
+**Training Tips**:
+
+1. Start with standing task before walking (easier to learn)
+2. Use GPU for 5-10x faster training (`--device cuda`)
+3. Monitor progress with TensorBoard
+4. Adjust reward weights in `configs/rl_config.yaml` if needed
+5. Expected training time: 30-60 min for standing, 1-2 hours for walking (on CPU)
+
+See [src/rl/README.md](src/rl/README.md) for detailed documentation.
 
 ---
 
