@@ -196,8 +196,8 @@ class H1StandingEnv(gym.Env):
         
         # Check termination conditions
         pelvis_height = info["pelvis_height"]
-        terminated = pelvis_height < 0.5  # Fell down
-        truncated = self.current_step >= self.max_steps
+        terminated = bool(pelvis_height < 0.5)  # Fell down
+        truncated = bool(self.current_step >= self.max_steps)
         
         return observation, reward, terminated, truncated, info
     
@@ -238,7 +238,7 @@ class H1StandingEnv(gym.Env):
             energy_penalty
         )
         
-        return reward
+        return float(reward)
     
     def render(self):
         """Render the environment."""
@@ -313,7 +313,7 @@ class H1WalkingEnv(H1StandingEnv):
             lateral_penalty
         )
         
-        return reward
+        return float(reward)
     
     def _get_info(self):
         """Get info with additional walking metrics."""
