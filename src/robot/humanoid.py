@@ -6,56 +6,44 @@ Now with optional RL policy assistance and walking capability!
 
 import mujoco
 import numpy as np
-from control.pd_standing import PDStandingController, ImprovedPDController, RLAssistedPDController
-from control.walking_controller import SimpleWalkingController, NavigationController
-from control.quasi_static_walking import QuasiStaticWalkingController
+
+# Import official Unitree RL controller
+from control.unitree_rl_controller import UnitreeRLWalkingController
 
 
 class UnitreeH1Controller:
     """
-    Simplified Unitree H1 controller using only PD standing control.
-    Based on official Unitree SDK examples adapted for MuJoCo simulation.
+    Unitree H1 controller using official Unitree RL walking controller.
+    Supports walking and navigation in MuJoCo simulation.
     """
     
-    def __init__(self, model, data, use_gravity_compensation=True, use_rl_assist=False, 
-                 rl_policy_path="policies/h1_demo_policy.pt", mode="standing"):
+    def __init__(self, model, data, mode="walking", robot_type="h1", **kwargs):
         """
-        Initialize H1 controller with PD standing control.
+        Initialize H1 controller with official Unitree RL controller.
         
         Args:
             model: MuJoCo model
             data: MuJoCo data
-            use_gravity_compensation: Use improved PD with gravity compensation (recommended)
-            use_rl_assist: Use RL policy to assist PD controller (EXPERIMENTAL)
-            rl_policy_path: Path to RL policy file
-            mode: Control mode - "standing", "walking", or "navigation"
+            mode: Control mode - "walking" or "navigation" (default: "walking")
+            robot_type: Robot type ("h1", "h1_2", "g1")
+            **kwargs: Ignored legacy arguments for backward compatibility
         """
         self.model = model
         self.data = data
         self.current_time = 0.0
         self.mode = mode
         
-        # Initialize controller based on mode
-        if mode == "navigation":
-            # 🗺️ Navigation mode: Walk to target positions
-            self.controller = NavigationController(model, data)
-            print("[UnitreeH1] 🗺️ Navigation controller initialized")
-        elif mode == "walking":
-            # 🚶 Walking mode: Quasi-static walking (slow but stable)
-            self.controller = QuasiStaticWalkingController(model, data)
-            print("[UnitreeH1] � Quasi-static walking controller initialized")
-        elif use_rl_assist:
-            # 🤖 RL-Assisted mode: Smart balance with learned behaviors
-            self.controller = RLAssistedPDController(model, data, policy_path=rl_policy_path, rl_weight=0.3)
-            print("[UnitreeH1] 🤖 RL-Assisted PD controller initialized")
-        elif use_gravity_compensation:
-            # Standard improved PD mode
-            self.controller = ImprovedPDController(model, data)
-            print("[UnitreeH1] ✅ PD controller with gravity compensation initialized")
-        else:
-            # Simple PD mode
-            self.controller = PDStandingController(model, data)
-            print("[UnitreeH1] ✅ Simple PD controller initialized")
+        # Initialize official Unitree RL walking controller
+        self.controller = UnitreeRLWalkingController(model, data, robot_type=robot_type)
+        print(f"[UnitreeH1] ⭐ Official Unitree RL {mode} controller initialized")
+    
+    def set_velocity_command(self, vx, vy, omega):
+        """Set velocity command for walking controller"""
+        self.controller.set_target_velocity(vx, vy, omega)
+    
+    def set_target(self, x, y):
+        """Set navigation target for walking controller"""
+        self.controller.set_target(x, y)
 
     def apply_control(self, dt=0.002):
         """
@@ -99,15 +87,7 @@ class UnitreeH1Controller:
         self.current_time = time
         self.apply_control(dt)
 
-    def update_target_pose(self, q_new):
-        """
-        Update target standing pose (for future walking implementation).
-        
-        Args:
-            q_new: New target joint positions
-        """
-        if hasattr(self.controller, 'update_target_pose'):
-            self.controller.update_target_pose(q_new)
+
     
     def set_walking_velocity(self, vx, vy=0.0):
         """

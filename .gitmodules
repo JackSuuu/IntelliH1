@@ -1,0 +1,3 @@
+[submodule "extern/unitree_rl_gym"]
+	path = extern/unitree_rl_gym
+	url = https://github.com/unitreerobotics/unitree_rl_gym.git

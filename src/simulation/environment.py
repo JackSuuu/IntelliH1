@@ -1,7 +1,14 @@
 import mujoco
 import numpy as np
 import os
-from config import LIDAR_SAMPLES, LIDAR_FOV, LIDAR_RANGE
+
+try:
+    from config import LIDAR_SAMPLES, LIDAR_FOV, LIDAR_RANGE
+except ImportError:
+    # Fallback if config not found
+    LIDAR_SAMPLES = 360
+    LIDAR_FOV = 360
+    LIDAR_RANGE = 10.0
 
 def create_car_model():
     """

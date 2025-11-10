@@ -28,6 +28,10 @@ def main():
                         help='RL blend weight (0=pure PD, 1=pure RL, default=0.3)')
     parser.add_argument('--rl-policy', type=str, default='policies/h1_demo_policy.pt',
                         help='Path to RL policy file')
+    parser.add_argument('--unitree-rl', action='store_true',
+                        help='⭐ Use official Unitree RL walking controller (RECOMMENDED)')
+    parser.add_argument('--robot-type', type=str, default='h1', choices=['h1', 'h1_2', 'g1'],
+                        help='Robot type for Unitree RL (default: h1)')
     parser.add_argument('--walk', action='store_true',
                         help='🚶 Enable walking mode (simple gait)')
     parser.add_argument('--navigate', action='store_true',
@@ -39,7 +43,17 @@ def main():
     args = parser.parse_args()
     
     # Determine control mode
-    if args.navigate:
+    if args.unitree_rl:
+        mode = "unitree_rl"
+        print("="*60)
+        print("⭐ UNITREE H1 - OFFICIAL RL WALKING CONTROLLER")
+        print(f"   Robot Type: {args.robot_type.upper()}")
+        if args.navigate:
+            print(f"   Mode: NAVIGATION to {args.target}")
+        else:
+            print(f"   Mode: WALKING at {args.walk_speed} m/s")
+        print("="*60)
+    elif args.navigate:
         mode = "navigation"
         print("="*60)
         print("🤖 UNITREE H1 - NAVIGATION TEST")
@@ -61,7 +75,9 @@ def main():
             print("   Using PD Control (Based on Official Unitree Examples)")
         print("="*60)
     
-    sim = Simulation(model_path="models/unitree_h1/scene_enhanced.xml")
+    # Always use enhanced scene with environment objects
+    print(f"[Setup] Loading enhanced scene with kitchen, bedroom, and living room")
+    sim = Simulation(model_path="extern/unitree_rl_gym/resources/robots/h1/scene_enhanced.xml")
     
     use_gravity_comp = not args.simple
     robot = UnitreeH1Controller(
@@ -70,7 +86,9 @@ def main():
         use_gravity_compensation=use_gravity_comp,
         use_rl_assist=args.rl,
         rl_policy_path=args.rl_policy,
-        mode=mode
+        mode=mode,
+        use_unitree_rl=args.unitree_rl,
+        robot_type=args.robot_type
     )
     
     mujoco.mj_forward(sim.model, sim.data)
@@ -108,35 +126,40 @@ def main():
     print()
     
     # Setup mode-specific configuration
-    if mode == "navigation":
-        # Parse target location
-        locations = {
-            'kitchen': (5.0, 3.0),
-            'bedroom': (-3.0, 6.0),
-            'livingroom': (0.0, -4.0),
-        }
-        
-        target_str = args.target.lower()
-        if target_str in locations:
-            target_x, target_y = locations[target_str]
-            print(f"🗺️  NAVIGATION MODE: Walking to {target_str.upper()}")
+    if mode == "unitree_rl" or mode == "navigation":
+        # Parse target location for navigation
+        if args.navigate:
+            locations = {
+                'kitchen': (5.0, 3.0),
+                'bedroom': (-3.0, 6.0),
+                'livingroom': (0.0, -4.0),
+            }
+            
+            target_str = args.target.lower()
+            if target_str in locations:
+                target_x, target_y = locations[target_str]
+                print(f"🗺️  NAVIGATION MODE: Walking to {target_str.upper()}")
+            else:
+                # Try parsing as coordinates
+                try:
+                    coords = [float(x.strip()) for x in args.target.split(',')]
+                    if len(coords) == 2:
+                        target_x, target_y = coords
+                        print(f"🗺️  NAVIGATION MODE: Walking to ({target_x:.2f}, {target_y:.2f})")
+                    else:
+                        raise ValueError()
+                except:
+                    print(f"⚠️  Invalid target: {args.target}")
+                    print("   Using default: Kitchen (5.0, 3.0)")
+                    target_x, target_y = 5.0, 3.0
+            
+            robot.set_navigation_target(target_x, target_y)
+            print(f"   Target: ({target_x:.2f}, {target_y:.2f})")
         else:
-            # Try parsing as coordinates
-            try:
-                coords = [float(x.strip()) for x in args.target.split(',')]
-                if len(coords) == 2:
-                    target_x, target_y = coords
-                    print(f"🗺️  NAVIGATION MODE: Walking to ({target_x:.2f}, {target_y:.2f})")
-                else:
-                    raise ValueError()
-            except:
-                print(f"⚠️  Invalid target: {args.target}")
-                print("   Using default: Kitchen (5.0, 3.0)")
-                target_x, target_y = 5.0, 3.0
-        
-        robot.set_navigation_target(target_x, target_y)
-        print(f"   Target: ({target_x:.2f}, {target_y:.2f})")
-        print(f"   Speed: {args.walk_speed} m/s")
+            # Walking mode
+            print(f"🚶 WALKING MODE: Continuous forward walking")
+            print(f"   Speed: {args.walk_speed} m/s")
+            robot.set_walking_velocity(args.walk_speed, 0.0)
         
     elif mode == "walking":
         print(f"🚶 WALKING MODE: Continuous forward walking")

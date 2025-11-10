@@ -35,7 +35,7 @@ class AStarPlanner:
         self.grid = np.zeros((self.grid_height, self.grid_width), dtype=np.uint8)
         
         # Robot safety margin (inflate obstacles)
-        self.robot_radius = 0.4  # meters (conservative)
+        self.robot_radius = 0.3  # meters (humanoid is relatively narrow)
         self.inflation_cells = int(np.ceil(self.robot_radius / grid_resolution))
         
         logger.info(f"A* Planner initialized: {self.grid_width}x{self.grid_height} grid, "
