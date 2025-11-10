@@ -51,3 +51,8 @@ faiss-cpu>=1.7.4
 langchain>=0.1.0
 chromadb>=0.4.0
 sentence-transformers>=2.2.0
+
+# Phase 4: Reinforcement Learning
+gymnasium>=0.29.0      # OpenAI Gym successor for RL environments
+stable-baselines3>=2.2.0  # State-of-the-art RL algorithms
+tensorboard>=2.15.0    # Training visualization

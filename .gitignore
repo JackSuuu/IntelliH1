@@ -51,6 +51,11 @@ logs/
 *.pkl
 *.pickle
 
+# RL training outputs
+models/policies/
+logs/tensorboard/
+*.zip
+
 # Test coverage
 .coverage
 htmlcov/
