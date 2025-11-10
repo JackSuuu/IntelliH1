@@ -4,6 +4,8 @@
 
 An intelligent humanoid control system combining physics-based whole-body control, multimodal perception, and LLM planning for the Unitree H1 robot.
 
+![](img.png)
+
 ![Status](https://img.shields.io/badge/status-experimental-orange)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-blue)
 ![Python](https://img.shields.io/badge/python-3.10+-green)
