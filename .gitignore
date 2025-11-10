@@ -1,11 +1,63 @@
+# Environment variables
 .env
+.env.local
+.env.*.local
+
+# Python cache and compiled files
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.pdb
 .Python
 *.so
-.DS_Store
-*.docx
+*.egg
+*.egg-info/
+dist/
+build/
+*.spec
+
+# Virtual environments
 .venv/
 venv/
+env/
+ENV/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb
+
+# Documentation
+*.docx
+*.pdf
+
+# Log files
+*.log
+logs/
+
+# Model checkpoints and large files (optional - comment out if you want to track them)
+*.pt
+*.pth
+*.ckpt
+*.h5
+*.pkl
+*.pickle
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
