@@ -302,3 +302,126 @@ class RLAssistedPDController:
     def update_target_pose(self, q_new):
         """Update target pose (delegates to PD controller)"""
         self.pd_controller.update_target_pose(q_new)
+
+
+class PIDStandingController:
+    """
+    PID Standing Controller with integral term for improved steady-state tracking.
+    
+    Control law: τ = Kp * error + Ki * ∫error dt + Kd * d_error/dt
+    
+    The integral term helps eliminate steady-state errors and drift,
+    which is particularly useful for long-term standing stability.
+    """
+    
+    def __init__(self, model, data, ki_factor=0.1):
+        """
+        Args:
+            model: MuJoCo model
+            data: MuJoCo data
+            ki_factor: Scaling factor for integral gains (default: 0.1)
+        """
+        self.model = model
+        self.data = data
+        self.nu = model.nu
+        
+        # Use same standing pose as PD controller
+        self.base_controller = PDStandingController(model, data)
+        self.q_target = self.base_controller.q_target
+        self.kp = self.base_controller.kp
+        self.kd = self.base_controller.kd
+        
+        # Integral gains (typically much smaller than Kp)
+        # Start with conservative values to avoid integral windup
+        self.ki = self.kp * ki_factor
+        
+        # Integral error accumulator
+        self.error_integral = np.zeros(self.nu)
+        
+        # Integral windup limits (prevent excessive accumulation)
+        self.integral_limit = np.array([
+            # Legs (prevent excessive buildup)
+            5.0, 5.0, 5.0, 5.0, 5.0,  # Left leg
+            5.0, 5.0, 5.0, 5.0, 5.0,  # Right leg
+            # Torso
+            5.0,
+            # Arms (less critical)
+            3.0, 3.0, 3.0, 3.0,
+            3.0, 3.0, 3.0, 3.0,
+        ])
+        
+        self.torque_limit = self.base_controller.torque_limit
+        
+        print("[PIDStanding] PID standing controller initialized")
+        print(f"[PIDStanding] Ki factor: {ki_factor}")
+        print(f"[PIDStanding] Integral term enabled for steady-state accuracy")
+    
+    def compute_control(self, dt=0.002):
+        """
+        Compute PID control with ankle strategy for balance.
+        
+        Args:
+            dt: Time step for integral computation
+            
+        Returns:
+            tau: Joint torques (nu,)
+        """
+        # Get current joint states
+        q = self.data.qpos[7:7+self.nu]
+        dq = self.data.qvel[6:6+self.nu]
+        
+        # Get base position for CoM estimation
+        base_pos = self.data.qpos[0:3]
+        base_vel = self.data.qvel[0:3]
+        
+        # Ankle strategy with adaptive gains
+        ankle_base_gain = 130.0
+        ankle_adaptive_gain = ankle_base_gain * (1.0 + 5.0 * abs(base_pos[0]))
+        ankle_compensation = -ankle_adaptive_gain * base_pos[0] - 25.0 * base_vel[0]
+        
+        # Hip strategy
+        hip_base_gain = 55.0
+        hip_adaptive_gain = hip_base_gain * (1.0 + 3.0 * abs(base_pos[0]))
+        hip_compensation = -hip_adaptive_gain * base_pos[0] - 12.0 * base_vel[0]
+        
+        # Torso strategy
+        torso_base_gain = 250.0
+        torso_adaptive_gain = torso_base_gain * (1.0 + 4.0 * abs(base_pos[0]))
+        torso_compensation = -torso_adaptive_gain * base_pos[0] - 35.0 * base_vel[0]
+        
+        # Create modified target with balance compensation
+        q_target_adjusted = self.q_target.copy()
+        q_target_adjusted[2] += hip_compensation
+        q_target_adjusted[7] += hip_compensation
+        q_target_adjusted[4] += ankle_compensation
+        q_target_adjusted[9] += ankle_compensation
+        q_target_adjusted[10] += torso_compensation
+        
+        # Calculate tracking error
+        error = q_target_adjusted - q
+        
+        # Update integral error with anti-windup
+        self.error_integral += error * dt
+        self.error_integral = np.clip(self.error_integral, -self.integral_limit, self.integral_limit)
+        
+        # PID control law
+        tau_p = self.kp * error
+        tau_i = self.ki * self.error_integral
+        tau_d = -self.kd * dq
+        
+        tau = tau_p + tau_i + tau_d
+        
+        # Apply torque limits
+        tau = np.clip(tau, -self.torque_limit, self.torque_limit)
+        
+        return tau
+    
+    def update_target_pose(self, q_new):
+        """Update target pose"""
+        self.q_target = q_new
+        # Reset integral when target changes to prevent windup
+        self.error_integral = np.zeros(self.nu)
+    
+    def reset_integral(self):
+        """Reset integral error accumulator"""
+        self.error_integral = np.zeros(self.nu)

@@ -37,6 +37,7 @@ pin>=2.6.20          # Pinocchio rigid body dynamics
 osqp>=0.6.3          # QP solver for MPC
 pyyaml>=6.0          # Configuration files
 scipy>=1.11.0        # Scientific computing
+matplotlib>=3.7.0    # Visualization and plotting
 
 # Phase 2: Multimodal Perception
 opencv-python>=4.8.0
