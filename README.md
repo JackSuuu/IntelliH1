@@ -4,10 +4,6 @@
 
 An intelligent humanoid navigation system combining LLM-based planning (Groq API) with the official Unitree RL walking controller for the Unitree H1 robot.
 
-<video width="100%" height="100%" controls>
-  <source src="demo.mp4" type="video/mp4">
-Your video will play here.
-</video>
 
 ![Status](https://img.shields.io/badge/status-stable-brightgreen)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-blue)
@@ -15,6 +11,10 @@ Your video will play here.
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![MuJoCo 3.3+](https://img.shields.io/badge/MuJoCo-3.3+-green.svg)](https://mujoco.org/)
 [![Unitree RL](https://img.shields.io/badge/Unitree-RL_Gym-blue)](https://github.com/unitreerobotics/unitree_rl_gym)
+
+## Demo
+
+https://github.com/user-attachments/assets/b1d41aa8-13d5-47da-9389-0d6525d0fc74
 
 ---
 
