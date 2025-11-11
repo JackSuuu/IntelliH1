@@ -80,7 +80,8 @@ https://github.com/user-attachments/assets/b1d41aa8-13d5-47da-9389-0d6525d0fc74
 - **Robot Model**: Unitree H1 (URDF/MJCF)
 - **Python Version**: 3.10+
 - **Core Dependencies**: NumPy, MuJoCo Python bindings
-- **AI Integration**: Groq API (Llama 3.3) + LangChain
+- **AI Integration**: Groq API (openai/gpt-oss-120b)
+- **Vector Search**: FAISS + sentence-transformers (for RAG)
 - **Perception**: OpenCV + C++ optimized point cloud processing
 - **Dynamics**: Pinocchio for rigid body dynamics
 - **Optimization**: OSQP for quadratic programming
@@ -306,7 +307,8 @@ Viewer (Visualization)
 | **Dynamics** | Pinocchio 2.6+ | Rigid body dynamics |
 | **Optimization** | OSQP 0.6+ | Quadratic programming |
 | **Perception** | OpenCV + C++ | Image & point cloud processing |
-| **AI** | Groq (Llama 3.3) + LangChain | Task planning & RAG |
+| **AI** | Groq (Llama 3.3 70B) | Natural language understanding & task planning |
+| **Vector Search** | FAISS + sentence-transformers | Physics knowledge retrieval (RAG) |
 
 ---
 
