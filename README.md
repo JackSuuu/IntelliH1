@@ -38,7 +38,7 @@ https://github.com/user-attachments/assets/b1d41aa8-13d5-47da-9389-0d6525d0fc74
 
 ### 🎯 Core Capabilities
 
-1. **⭐ Official Unitree RL Walking Controller** (✅ Stable)
+1. **⭐ Official Unitree RL Walking Controller**
    - Pre-trained RL policy from [unitree_rl_gym](https://github.com/unitreerobotics/unitree_rl_gym)
    - 30+ seconds continuous stable walking
    - Supports H1, H1_2, and G1 robots
@@ -46,7 +46,7 @@ https://github.com/user-attachments/assets/b1d41aa8-13d5-47da-9389-0d6525d0fc74
    - PD tracking with optimized gains
    - Adaptive velocity control based on heading error
 
-2. **🤖 LLM-Driven Navigation** (✅ Production Ready)
+2. **🤖 LLM-Driven Navigation**
    - Natural language command understanding (Groq API + openai/gpt-oss-120b)
    - Automatic target parsing ("walk to the kitchen" → target coordinates)
    - **Real-time navigation with intelligent path following**
@@ -54,21 +54,21 @@ https://github.com/user-attachments/assets/b1d41aa8-13d5-47da-9389-0d6525d0fc74
    - Scene landmarks: Kitchen, Bedroom, Living Room
    - Dynamic waypoint progression tracking
 
-3. **🗺️ A* Path Planning** (✅ Stable)
+3. **🗺️ A* Path Planning**
    - Obstacle-aware global path planning
    - Dynamic occupancy grid mapping
    - Waypoint generation with ~0.3m resolution
    - Real-time path updates every 0.5s
    - Collision avoidance with static obstacles
 
-4. **📡 C++ Radar Perception** (✅ Fully Integrated)
+4. **📡 C++ Radar Perception**
    - **Real-time LIDAR simulation (360° coverage, 10m range)**
    - **C++ optimized point cloud processing (pybind11)**
    - Noise filtering and obstacle detection
    - Occupancy grid generation for path planning
    - ~360 samples per scan with sub-10ms processing time
 
-5. **🗺️ Enhanced Environment Scene** (✅ Available)
+5. **🗺️ Enhanced Environment Scene**
    - Kitchen area with counter and cabinet (5.0, 3.0)
    - Bedroom with bed and nightstand (-3.0, 6.0)
    - Living room with couch and coffee table (0.0, -4.0)
@@ -232,14 +232,14 @@ IntelliH1/
 
 ### Key Components
 
-| Component | Purpose | Status |
-|-----------|---------|--------|
-| **cognitive_controller.py** | Top-level cognitive control integrating LLM → Perception → Planning → Motion | ✅ Production |
-| **unitree_rl_controller.py** | Unitree RL walking with adaptive velocity and heading correction | ✅ Stable |
-| **path_planner.py** | A* global path planning with dynamic obstacle avoidance | ✅ Stable |
-| **perception_cpp** | C++ optimized LIDAR processing (360 samples, <10ms) | ✅ Integrated |
-| **navigation_planner.py** | LLM-based command parsing and target extraction | ✅ Production |
-| **test_llm_navigation.py** | Main demo script for LLM-driven navigation | ✅ Ready |
+| Component | Purpose |
+|-----------|---------|
+| **cognitive_controller.py** | Top-level cognitive control integrating LLM → Perception → Planning → Motion |
+| **unitree_rl_controller.py** | Unitree RL walking with adaptive velocity and heading correction |
+| **path_planner.py** | A* global path planning with dynamic obstacle avoidance |
+| **perception_cpp** | C++ optimized LIDAR processing (360 samples, <10ms) |
+| **navigation_planner.py** | LLM-based command parsing and target extraction |
+| **test_llm_navigation.py** | Main demo script for LLM-driven navigation |
 
 ---
 
@@ -408,12 +408,12 @@ is_stable = zmp in support_polygon
 
 ### ✅ Recently Fixed
 
-1. **Navigation Speed Configuration** (Fixed ✅)
+1. **Navigation Speed Configuration**
    - **Issue**: Command-line `--speed` parameter was ignored
    - **Solution**: Propagated `max_speed` through controller hierarchy (CognitiveController → UnitreeRLWalkingController → UnitreeRLController)
    - **Status**: Speed now fully configurable from 0.5-3.0 m/s
 
-2. **Robot Not Stopping at Destination** (Fixed ✅)
+2. **Robot Not Stopping at Destination**
    - **Issue**: Robot reached goal area but continued spinning
    - **Solution**:
      - Implemented goal-based stopping (1.2m tolerance around final destination)
@@ -421,7 +421,7 @@ is_stable = zmp in support_polygon
      - Velocity and target cleared upon goal detection
    - **Status**: Robot now reliably stops at destination
 
-3. **Heading Error Causing Drift** (Fixed ✅)
+3. **Heading Error Causing Drift**
    - **Issue**: Robot walking in wrong direction with constant omega=0.5 rad/s
    - **Solution**:
      - Adaptive velocity scaling based on heading error (60°+ → 10% speed, 30°+ → 30% speed)
