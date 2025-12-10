@@ -5,6 +5,7 @@ Wraps the existing simulation/environment.py into a ROS2 node
 Publishes sensor data and receives motor commands
 """
 
+import os
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
