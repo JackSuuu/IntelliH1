@@ -12,9 +12,9 @@ from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 import numpy as np
 
 # ROS2 messages
-from sensor_msgs.msg import JointState, Imu
+from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Float64MultiArray, Header
+from std_msgs.msg import Float64MultiArray
 
 # IntelliH1 controller
 import mujoco
