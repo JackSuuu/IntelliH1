@@ -5,6 +5,7 @@ Wraps the existing unitree_rl_controller.py into a ROS2 node
 Subscribes to /cmd_vel and publishes motor commands
 """
 
+import os
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
