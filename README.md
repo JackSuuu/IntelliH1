@@ -24,6 +24,7 @@ https://github.com/user-attachments/assets/b1d41aa8-13d5-47da-9389-0d6525d0fc74
 
 - [Features](#features)
 - [Quick Start](#quick-start)
+- [ROS2 Integration](#ros2-integration) 🆕
 - [Project Structure](#project-structure)
 - [Technical Architecture](#technical-architecture)
 - [Control Modes](#control-modes)
@@ -155,6 +156,57 @@ chmod +x demo.sh
 - **Intelligent Control**: Adaptive velocity based on heading error (slows when turning, speeds up when aligned)
 - **Goal Detection**: Automatic stopping within 1.2m of destination
 - **Path Completion**: Follows 9-waypoint A* path and stops at destination (~6-8m path in 8-12 seconds at 1.0 m/s)
+
+---
+
+## 🤖 ROS2 Integration
+
+IntelliH1 now supports ROS2 using a "Wrap & Bridge" strategy that preserves all existing algorithms while enabling modular, distributed robotics development.
+
+### Quick Start (ROS2)
+
+```bash
+# Install ROS2 via RoboStack
+conda create -n ros_env python=3.10
+conda activate ros_env
+conda install ros-humble-desktop colcon-common-extensions
+
+# Build package
+cd ros2_ws
+colcon build --packages-select intelli_h1_ros
+source install/setup.bash
+
+# Launch all nodes
+ros2 launch intelli_h1_ros demo_launch.py max_speed:=1.0
+
+# Send navigation command
+ros2 topic pub --once /navigation_command std_msgs/String "data: 'go to kitchen'"
+```
+
+### ROS2 Architecture
+
+```
+brain_node (1Hz planning) → cmd_vel → rl_node (50Hz) → motor_cmd → sim_node (500Hz)
+     ↓                                                                      ↓
+   /path                                                            /joint_states, /tf
+```
+
+### Documentation
+
+- **[ROS2 Migration Guide](ROS2_MIGRATION.md)** - Complete migration documentation
+- **[Quick Start](ros2_ws/QUICKSTART.md)** - 10-minute setup guide
+- **[Package README](ros2_ws/src/intelli_h1_ros/README.md)** - Node details and usage
+- **[URDF Setup](ros2_ws/src/intelli_h1_ros/URDF_SETUP.md)** - Robot visualization guide
+- **[Testing Guide](ros2_ws/TESTING.md)** - Testing and debugging
+
+### Key Features
+
+- ✅ Modular node-based architecture (sim, rl, brain)
+- ✅ Standard ROS2 message types
+- ✅ RViz2 visualization support
+- ✅ TF tree for coordinate transforms
+- ✅ Launch file configurations
+- ✅ Real-time performance (500Hz physics, 50Hz control, 1Hz planning)
 
 ---
 
