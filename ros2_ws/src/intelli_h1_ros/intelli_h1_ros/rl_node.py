@@ -16,12 +16,12 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import Float64MultiArray, Header
 
 # IntelliH1 controller
-import sys
-import os
-intellih1_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../..'))
-sys.path.insert(0, os.path.join(intellih1_root, 'src'))
-
 import mujoco
+from .utils import setup_intellih1_path
+
+# Setup IntelliH1 paths
+intellih1_root = setup_intellih1_path()
+
 from control.unitree_rl_controller import UnitreeRLController
 
 

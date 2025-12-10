@@ -19,10 +19,10 @@ from std_msgs.msg import String
 from tf2_ros import Buffer, TransformListener
 
 # IntelliH1 modules
-import sys
-import os
-intellih1_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../..'))
-sys.path.insert(0, os.path.join(intellih1_root, 'src'))
+from .utils import setup_intellih1_path, DEFAULT_LOCATIONS
+
+# Setup IntelliH1 paths
+intellih1_root = setup_intellih1_path()
 
 from llm.navigation_planner import NavigationPlanner
 from perception.path_planner import AStarPlanner
@@ -78,13 +78,13 @@ class BrainNode(Node):
         self.robot_y = 0.0
         self.robot_yaw = 0.0
         
-        # Known locations
-        self.locations = {
-            "kitchen": (5.0, 3.0),
-            "bedroom": (-3.0, 6.0),
-            "living_room": (0.0, -4.0),
-            "living room": (0.0, -4.0),
-        }
+        # Known locations (can be overridden via ROS parameters in future)
+        self.locations = DEFAULT_LOCATIONS.copy()
+        
+        # TODO: Add ROS parameter for custom locations
+        # self.declare_parameter('locations', {})
+        # custom_locations = self.get_parameter('locations').value
+        # self.locations.update(custom_locations)
         
         # Publishers
         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
