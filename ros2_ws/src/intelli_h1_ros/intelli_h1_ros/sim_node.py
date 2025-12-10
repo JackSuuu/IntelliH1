@@ -18,13 +18,11 @@ from geometry_msgs.msg import TransformStamped
 from tf2_ros import TransformBroadcaster
 
 # MuJoCo and IntelliH1
-import sys
-import os
-# Add IntelliH1 src to path
-intellih1_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../..'))
-sys.path.insert(0, os.path.join(intellih1_root, 'src'))
-
 import mujoco
+from .utils import setup_intellih1_path, mujoco_to_ros_quaternion
+
+# Setup IntelliH1 paths
+intellih1_root = setup_intellih1_path()
 
 
 class MuJoCoSimNode(Node):
@@ -157,12 +155,14 @@ class MuJoCoSimNode(Node):
         t.transform.translation.z = float(self.data.qpos[2])
         
         # Get base orientation (quaternion: qpos[3:7])
-        # MuJoCo uses [w, x, y, z] format
-        # ROS uses [x, y, z, w] format
-        t.transform.rotation.x = float(self.data.qpos[4])
-        t.transform.rotation.y = float(self.data.qpos[5])
-        t.transform.rotation.z = float(self.data.qpos[6])
-        t.transform.rotation.w = float(self.data.qpos[3])
+        # Convert from MuJoCo [w,x,y,z] to ROS [x,y,z,w] format
+        mujoco_quat = self.data.qpos[3:7]
+        ros_quat = mujoco_to_ros_quaternion(mujoco_quat)
+        
+        t.transform.rotation.x = ros_quat[0]
+        t.transform.rotation.y = ros_quat[1]
+        t.transform.rotation.z = ros_quat[2]
+        t.transform.rotation.w = ros_quat[3]
         
         self.tf_broadcaster.sendTransform(t)
 

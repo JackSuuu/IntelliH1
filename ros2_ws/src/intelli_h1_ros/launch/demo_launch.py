@@ -86,28 +86,28 @@ def generate_launch_description():
     )
     
     # 4. Robot State Publisher (publishes URDF transforms)
-    # Note: This requires a proper URDF file
-    robot_state_pub = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        name='robot_state_publisher',
-        output='screen',
-        parameters=[{
-            'robot_description': '',  # TODO: Load from URDF file
-            'publish_frequency': 50.0,
-        }],
-        condition=lambda context: False  # Disabled until URDF is ready
-    )
+    # Note: This requires a proper URDF file - see URDF_SETUP.md
+    # Uncomment and configure when URDF is ready:
+    # robot_state_pub = Node(
+    #     package='robot_state_publisher',
+    #     executable='robot_state_publisher',
+    #     name='robot_state_publisher',
+    #     output='screen',
+    #     parameters=[{
+    #         'robot_description': '',  # TODO: Load from URDF file
+    #         'publish_frequency': 50.0,
+    #     }]
+    # )
     
     # 5. RViz2 for visualization
-    rviz_node = Node(
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2',
-        arguments=['-d', rviz_config],
-        output='screen',
-        condition=lambda context: context.launch_configurations['use_rviz'] == 'true'
-    )
+    # Uncomment to enable RViz:
+    # rviz_node = Node(
+    #     package='rviz2',
+    #     executable='rviz2',
+    #     name='rviz2',
+    #     arguments=['-d', rviz_config],
+    #     output='screen'
+    # )
     
     return LaunchDescription([
         # Arguments
@@ -115,10 +115,12 @@ def generate_launch_description():
         max_speed_arg,
         use_rviz_arg,
         
-        # Nodes
+        # Active nodes
         sim_node,
         rl_node,
         brain_node,
-        # robot_state_pub,  # Disabled until URDF ready
-        # rviz_node,  # Disabled until config ready
+        
+        # Optional nodes (disabled by default - see comments above)
+        # robot_state_pub,
+        # rviz_node,
     ])
