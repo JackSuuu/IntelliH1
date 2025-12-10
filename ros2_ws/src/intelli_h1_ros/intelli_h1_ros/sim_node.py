@@ -10,7 +10,6 @@ import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 import numpy as np
-from scipy.spatial.transform import Rotation
 
 # ROS2 messages
 from sensor_msgs.msg import JointState
