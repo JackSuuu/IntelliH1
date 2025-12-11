@@ -15,17 +15,20 @@ This guide will get you up and running with the IntelliH1 ROS2 integration in un
 brew install miniforge  # macOS
 # OR wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh && bash Miniforge3-Linux-x86_64.sh  # Linux
 
-# Create and activate ROS2 environment
-conda create -n ros_env python=3.10 -y
-conda activate ros_env
-
-# Add RoboStack channels
+# Configure channels FIRST (required before creating environment)
 conda config --add channels conda-forge
 conda config --add channels robostack-staging
 conda config --set channel_priority strict
 
+# Create and activate ROS2 environment
+conda create -n ros_env python=3.10 -y
+conda activate ros_env
+
 # Install ROS2 Humble (this takes 3-4 minutes)
+# For systems with GUI (desktop/laptop):
 conda install ros-humble-desktop colcon-common-extensions -y
+# For headless servers (no display):
+conda install ros-humble-ros-base colcon-common-extensions -y
 
 # Install Python dependencies
 pip install mujoco groq python-dotenv torch numpy scipy
