@@ -130,7 +130,7 @@ class RLControllerNode(Node):
         self.target_omega = msg.angular.z
         
         # Update controller target
-        self.controller.set_target_velocity(
+        self.controller.set_velocity_command(
             self.target_vx, 
             self.target_vy, 
             self.target_omega
@@ -140,7 +140,7 @@ class RLControllerNode(Node):
         """Control loop - compute and publish motor commands"""
         try:
             # Compute control action using RL policy
-            action = self.controller.compute_action()
+            action = self.controller.compute_control()
             
             # Publish motor commands
             msg = Float64MultiArray()
